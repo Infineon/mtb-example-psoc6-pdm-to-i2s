@@ -5,7 +5,7 @@
 *  codec.c. This driver is intended for AK4954A.
 *
 ******************************************************************************
-* Copyright (2017), Cypress Semiconductor Corporation.
+* Copyright (2019), Cypress Semiconductor Corporation.
 ******************************************************************************
 * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
 * protected by and subject to worldwide patent protection (United States and
@@ -32,7 +32,6 @@
 * such use and in doing so indemnifies Cypress against all charges. Use may be
 * limited by and subject to the applicable Cypress software license agreement.
 *****************************************************************************/
-
 #ifndef AK4954A_H
 	#define AK4954A_H	
 	
@@ -47,7 +46,7 @@
     #define AK4954A_I2C_TIMEOUT         (50u)
     
     /* I2C Callback typedef */
-    typedef uint32_t (*ak4954A_transmit_callback)(uint8_t reg_addr, uint8_t data);
+    typedef uint32_t (*ak4954a_transmit_callback)(uint8_t reg_addr, uint8_t data);
 
 	/**************************************************************************************************
 	* Register Addresses for AK4954A I2C Interface
@@ -128,7 +127,7 @@
 	#define AK4954A_MODE_CTRL1_DIF_24M_24L    0x00    /* 24-bit MSB / 24-bit LSB */
     #define AK4954A_MODE_CTRL1_DIF_24M_16L    0x01    /* 24-bit MSB / 16-bit LSB */
     #define AK4954A_MODE_CTRL1_DIF_24M_24M    0x02    /* 24-bit MSB / 24-bit MSB */
-    #define AK4954A_MODE_CTRL1_DIF_24_16_I2S  0x04    /* 24/16-bit I2S Compatible */
+    #define AK4954A_MODE_CTRL1_DIF_24_16_I2S  0x03    /* 24/16-bit I2S Compatible */
     #define AK4954A_MODE_CTRL1_DIF_32M_32M    0x06    /* 32-bit MSB / 32-bit MSB */
     #define AK4954A_MODE_CTRL1_DIF_32_I2S     0x07    /* 32-bit I2S Compatible */
 	#define AK4954A_MODE_CTRL1_BCK0_32fs      0x00    /* BICK Output Frequency of 32fs */
@@ -182,19 +181,19 @@
 	#define AK4954A_RESET_WAIT_DELAY				(10)	 /* in milli seconds */
 
     /* Volume Control Constants */
-	#define AK4954A_HP_DEFAULT_VOLUME				(0xE1)  /* Default Value (+30.0dB) */
-	#define AK4954A_HP_VOLUME_MAX					(0xF1) 	/* Maximum Value (+36.0dB) */	
-    #define AK4954A_HP_VOLUME_MIN					(0x05) 	/* Minimum Value (-52.5dB) */	
-	#define AK4954A_HP_MUTE_VALUE					(0x00) 	/* Writing <= 0x00 mutes the headphone output */
+	#define AK4954A_HP_DEFAULT_VOLUME				(0x0C)  /* Default Value (0.0dB) */
+	#define AK4954A_HP_VOLUME_MAX					(0x00) 	/* Maximum Value (+6.0dB) */	
+    #define AK4954A_HP_VOLUME_MIN					(0x8F) 	/* Minimum Value (-65.5dB) */	
+	#define AK4954A_HP_MUTE_VALUE					(0x90) 	/* Writing <= 0x90 mutes the headphone output */
 		
     /* Default Configuration Values */
 	#define AK4954A_DEF_SAMPLING_RATE				AK4954A_MODE_CTRL2_CM_256fs
-	#define AK4954A_DEF_DATA_ALIGNMENT              AK4954A_MODE_CTRL1_DIF_24_16_I2S	
+	#define AK4954A_DEF_DATA_ALIGNMENT              AK4954A_MODE_CTRL1_DIF_24_16_I2S
 
-	uint32_t ak4954A_init(ak4954A_transmit_callback callback);
-	uint32_t ak4954A_adjust_volume(uint8_t volume);
-	uint32_t ak4954A_activate(void);
-	uint32_t ak4954A_deactivate(void);
+	uint32_t ak4954a_init(ak4954a_transmit_callback callback);
+	uint32_t ak4954a_adjust_volume(uint8_t volume);
+	uint32_t ak4954a_activate(void);
+	uint32_t ak4954a_deactivate(void);
 	
 #endif /* #ifndef AK4954A_H */
 

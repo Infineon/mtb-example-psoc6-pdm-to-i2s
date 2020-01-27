@@ -8,7 +8,7 @@
 *
 *
 *******************************************************************************
-* (c) (2019), Cypress Semiconductor Corporation. All rights reserved.
+* (c) (2019-20), Cypress Semiconductor Corporation. All rights reserved.
 *******************************************************************************
 * This software, including source code, documentation and related materials
 * ("Software"), is owned by Cypress Semiconductor Corporation or one of its
@@ -154,8 +154,8 @@ int main(void)
     Cy_PDM_PCM_Init(CYBSP_PDM_HW, &CYBSP_PDM_config);
 
     /* Configure the AK494A codec and enable it */
-    ak4954A_init(mi2c_transmit);
-    ak4954A_activate();
+    ak4954a_init(mi2c_transmit);
+    ak4954a_activate();
 
     /* Initialize the DMAs and their descriptor addresses */
     Cy_DMA_Descriptor_Init(&CYBSP_DMA_PDM_Descriptor_0, &CYBSP_DMA_PDM_Descriptor_0_config);

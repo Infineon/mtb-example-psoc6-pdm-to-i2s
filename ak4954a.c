@@ -4,7 +4,7 @@
 * Description: This file contains the AK4954a codec control APIs.
 *
 ******************************************************************************
-* Copyright (2017), Cypress Semiconductor Corporation.
+* Copyright (2019), Cypress Semiconductor Corporation.
 ******************************************************************************
 * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
 * protected by and subject to worldwide patent protection (United States and
@@ -37,14 +37,13 @@
 
 #define I2C_WRITE_OPERATION		(0x00)
 
-ak4954A_transmit_callback   ak4954a_transmit;
+ak4954a_transmit_callback   ak4954a_transmit;
 
 /*******************************************************************************
-* Function Name: ak4954A_init
+* Function Name: ak4954a_init
 ********************************************************************************
 * Summary:
 *   Initializes the codec with default settings.
-*
 *
 * Parameters:  
 *	None
@@ -53,12 +52,16 @@ ak4954A_transmit_callback   ak4954a_transmit;
 *   uint32_t - I2C master transaction error status 
 *
 *******************************************************************************/
-uint32_t ak4954A_init(ak4954A_transmit_callback callback)
+uint32_t ak4954a_init(ak4954a_transmit_callback callback)
 {
 	uint32_t ret;
 	
     ak4954a_transmit = callback;
    
+    /* Clear Power Managament 1 register (dummy write) */
+    ret = ak4954a_transmit(AK4954A_REG_PWR_MGMT1, 0x00);
+    if (ret) return ret;
+
     /* Clear Power Managament 1 register */
     ret = ak4954a_transmit(AK4954A_REG_PWR_MGMT1, 0x00);
     if (ret) return ret;
@@ -82,7 +85,7 @@ uint32_t ak4954A_init(ak4954A_transmit_callback callback)
 }
 
 /*******************************************************************************
-* Function Name: ak4954A_adjust_volume
+* Function Name: ak4954a_adjust_volume
 ********************************************************************************
 * Summary:
 *   This function updates the volume of both the left and right channels of the
@@ -90,36 +93,30 @@ uint32_t ak4954A_init(ak4954A_transmit_callback callback)
 *
 *
 * Parameters:  
-*	volume - Steps of 0.375dB, where:
-*            Minimum volume: -52.5dB (0x05)
-*            Maximum volume: +36.0dB (0xF1)
-*            Mute: (0x00)
+*	volume - Steps of 0.5dB, where:
+*            Minimum volume: -65.5dB (0x8F)
+*            Maximum volume:  +6.0dB (0x00)
+*            Mute: (0x90~0xFF)
 *
 * Return:
 *   uint32_t - I2C master transaction error status
 *
 *******************************************************************************/
-uint32_t ak4954A_adjust_volume(uint8_t volume)
+uint32_t ak4954a_adjust_volume(uint8_t volume)
 {
     uint32_t ret;
-    
-	if(volume > AK4954A_HP_VOLUME_MAX)
-	{
-		volume = AK4954A_HP_VOLUME_MAX;
-	}
-	
+    	
 	ret = ak4954a_transmit(AK4954A_REG_LCH_DIG_VOL, volume);
     if (ret) return ret;
     return ak4954a_transmit(AK4954A_REG_RCH_DIG_VOL, volume);
 }
 
 /*******************************************************************************
-* Function Name: ak4954A_activate
+* Function Name: ak4954a_activate
 ********************************************************************************
 * Summary:
 *   Activates the codec - This function is called in conjunction with 
 *   ak4954A_deactivate API after successful configuration update of the codec.
-*
 *
 * Parameters:  
 *	None
@@ -128,7 +125,7 @@ uint32_t ak4954A_adjust_volume(uint8_t volume)
 *   uint32_t - I2C master transaction error status
 *
 *******************************************************************************/
-uint32_t ak4954A_activate(void)
+uint32_t ak4954a_activate(void)
 {
     uint32_t ret;
     
@@ -144,13 +141,12 @@ uint32_t ak4954A_activate(void)
 }
 
 /*******************************************************************************
-* Function Name: ak4954A_deactivate
+* Function Name: ak4954a_deactivate
 ********************************************************************************
 * Summary:
 *   Deactivates the codec - the configuration is retained, just the codec 
 *   input/outputs are disabled. The function should be called before changing 
 *   any setting in the codec over I2C
-*
 *
 * Parameters:  
 *	None
@@ -159,7 +155,7 @@ uint32_t ak4954A_activate(void)
 *   uint32_t - I2C master transaction error status
 *
 *******************************************************************************/
-uint32_t ak4954A_deactivate(void)
+uint32_t ak4954a_deactivate(void)
 {
     uint32_t ret;
    
