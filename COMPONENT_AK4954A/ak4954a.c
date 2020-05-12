@@ -1,10 +1,10 @@
 /*******************************************************************************
 * File Name: ak4954a.c
 *
-* Description: This file contains the AK4954a codec control APIs.
+* Description: This file contains the AK4954A codec control APIs.
 *
 ******************************************************************************
-* Copyright (2019), Cypress Semiconductor Corporation.
+* Copyright (2020), Cypress Semiconductor Corporation.
 ******************************************************************************
 * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
 * protected by and subject to worldwide patent protection (United States and
@@ -35,8 +35,6 @@
 #include "ak4954a.h"
 #include "stdbool.h"
 
-#define I2C_WRITE_OPERATION		(0x00)
-
 ak4954a_transmit_callback   ak4954a_transmit;
 
 /*******************************************************************************
@@ -54,8 +52,8 @@ ak4954a_transmit_callback   ak4954a_transmit;
 *******************************************************************************/
 uint32_t ak4954a_init(ak4954a_transmit_callback callback)
 {
-	uint32_t ret;
-	
+    uint32_t ret;
+
     ak4954a_transmit = callback;
    
     /* Clear Power Managament 1 register (dummy write) */
@@ -73,15 +71,9 @@ uint32_t ak4954a_init(ak4954a_transmit_callback callback)
     /* Set sample rate */
     ret = ak4954a_transmit(AK4954A_REG_MODE_CTRL2, AK4954A_DEF_SAMPLING_RATE);
     if (ret) return ret;
-    
-    /* Power-up VCOM */
-    ret = ak4954a_transmit(AK4954A_REG_PWR_MGMT1, AK4954A_PWR_MGMT1_PMVCM);
-    if (ret) return ret;
-    
-    /* Clear Digital Filter Mode register */
-    ret = ak4954a_transmit(AK4954A_REG_DIG_FILT_MODE, 0x00);
         
-	return ret;  
+    /* Clear Digital Filter Mode register */
+    return ak4954a_transmit(AK4954A_REG_DIG_FILT_MODE, 0x00);
 }
 
 /*******************************************************************************
@@ -106,8 +98,10 @@ uint32_t ak4954a_adjust_volume(uint8_t volume)
 {
     uint32_t ret;
     	
-	ret = ak4954a_transmit(AK4954A_REG_LCH_DIG_VOL, volume);
+    ret = ak4954a_transmit(AK4954A_REG_LCH_DIG_VOL, volume);
     if (ret) return ret;
+
+    /* Send Right Channel Volume */
     return ak4954a_transmit(AK4954A_REG_RCH_DIG_VOL, volume);
 }
 
@@ -135,9 +129,8 @@ uint32_t ak4954a_activate(void)
     if (ret) return ret;
     
     /* Enable Left/Right Channels */
-    ret = ak4954a_transmit(AK4954A_REG_PWR_MGMT2, 
+    return ak4954a_transmit(AK4954A_REG_PWR_MGMT2, 
                            AK4954A_PWR_MGMT2_PMHPL | AK4954A_PWR_MGMT2_PMHPR);
-    return ret;
 }
 
 /*******************************************************************************
@@ -161,10 +154,10 @@ uint32_t ak4954a_deactivate(void)
    
     /* Disable Left/Right Channels */
     ret = ak4954a_transmit(AK4954A_REG_PWR_MGMT2, 0x00);
-    
+    if (ret) return ret;
+
     /* Disable Power Management DAC */
-    ret = ak4954a_transmit(AK4954A_REG_PWR_MGMT1, AK4954A_PWR_MGMT1_PMVCM);
-    return ret;
+    return ak4954a_transmit(AK4954A_REG_PWR_MGMT1, AK4954A_PWR_MGMT1_PMVCM);
 }
 
 /* [] END OF FILE */
